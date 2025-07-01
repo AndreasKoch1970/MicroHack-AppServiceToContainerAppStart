@@ -5,11 +5,11 @@ WORKDIR /app
 EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR .
 COPY ["MicroHack-AppServiceToContainerAppStart.csproj", "."]
 RUN dotnet restore "./MicroHack-AppServiceToContainerAppStart.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR .
 RUN dotnet build "./MicroHack-AppServiceToContainerAppStart.csproj" -c Release -o /app/build
 
 FROM build AS publish
