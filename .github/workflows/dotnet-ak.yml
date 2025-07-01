@@ -28,5 +28,5 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Build and Push Image
       run: az acr login --name containerregistryandreaskoch --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }} && 
-           docker build -t containerregistryandreaskoch.azurecr.io/microhackapp:1 -f Dockerfile . && 
-           docker push containerregistryandreaskoch.azurecr.io/microhackapp:1
+           docker build -t containerregistryandreaskoch.azurecr.io/MicroHack-AppServiceToContainerAppStart:1 -f Dockerfile . && 
+           docker push containerregistryandreaskoch.azurecr.io/MicroHack-AppServiceToContainerAppStart:1
