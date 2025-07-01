@@ -6,16 +6,16 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-COPY ["MicroHack-AppServiceToContainerAppStart.csproj", "."]
-RUN dotnet restore "./MicroHack-AppServiceToContainerAppStart.csproj"
+COPY ["MicroHackApp.csproj", "."]
+RUN dotnet restore "./MicroHackApp.csproj"
 COPY . .
 WORKDIR /app
-RUN dotnet build "./MicroHack-AppServiceToContainerAppStart.csproj" -c Release -o /app/build
+RUN dotnet build "./MicroHackApp.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "MicroHack-AppServiceToContainerAppStart.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "MicroHackApp.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MicroHack-AppServiceToContainerAppStart.dll"]
+ENTRYPOINT ["dotnet", "MicroHackApp.dll"]
