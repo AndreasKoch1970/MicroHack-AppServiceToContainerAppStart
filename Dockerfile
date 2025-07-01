@@ -1,15 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:35792ea4ad1db051981f62b313f1be3b46b1f45cadbaa3c288cd0d3056eefb83 AS build
-WORKDIR /App
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-# Copy everything
-COPY . ./
-# Restore as distinct layers
-RUN dotnet restore
-# Build and publish a release
-RUN dotnet publish -o out
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:6c4df091e4e531bb93bdbfe7e7f0998e7ced344f54426b7e874116a3dc3233ff
-WORKDIR /App
-COPY --from=build /App/out .
-ENTRYPOINT ["dotnet", "DotNet.Docker.dll"]
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["MicroHack-AppServiceToContainerAppStart.csproj", "."]
+RUN dotnet restore "./MicroHack-AppServiceToContainerAppStart.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "./MicroHack-AppServiceToContainerAppStart.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "MicroHack-AppServiceToContainerAppStart.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "MicroHack-AppServiceToContainerAppStart.dll"]
